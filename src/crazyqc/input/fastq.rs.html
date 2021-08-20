@@ -448,7 +448,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">run_worker</span>() {
-        <span class="macro">assert_eq!</span>(<span class="ident">worker</span>(<span class="prelude-val">Ok</span>(<span class="string">b&quot;ACTG&quot;</span>.<span class="ident">to_vec</span>())), (<span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>));
+        <span class="macro">assert_eq!</span>(<span class="ident">worker</span>(<span class="prelude-val">Ok</span>(<span class="string">b&quot;ACTGN&quot;</span>.<span class="ident">to_vec</span>())), (<span class="number">2</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>));
 
         <span class="macro">assert_eq!</span>(<span class="ident">worker</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;prout&quot;</span>))), (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>));
     }
