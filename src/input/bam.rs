@@ -114,9 +114,11 @@ pub fn worker(wrapper: anyhow::Result<noodles::bam::record::Record>) -> (u64, u6
 
 #[cfg(test)]
 mod t {
-    use tempfile::NamedTempFile;
-
     use super::*;
+
+    use std::io::{Seek, Write};
+
+    use tempfile::NamedTempFile;
 
     fn create_bam_file() -> (NamedTempFile, String) {
         let tmp_file = tempfile::NamedTempFile::new().unwrap();
@@ -190,7 +192,7 @@ mod t {
     }
 
     #[test]
-    fn iterate_over_fasta() {
+    fn iterate_over_bam() {
         let (_e, path) = create_bam_file();
 
         let mut reader = Bam::new(vec![path], 10).unwrap();
@@ -207,6 +209,90 @@ mod t {
     }
 
     #[test]
+    fn iterate_over_bam_error() {
+        let (mut file, path) = create_bam_file();
+
+        file.seek(std::io::SeekFrom::End(0)).unwrap();
+        writeln!(file, "Failled record").unwrap();
+
+        let mut reader = Bam::new(vec![path], 10).unwrap();
+
+        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
+        assert_eq!(
+            &reader.next().unwrap().unwrap().sequence()[..],
+            [18, 132, 18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence()[..],
+            [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
+        );
+
+        let record = reader.next();
+
+        assert!(record.is_none());
+    }
+
+    #[test]
+    fn iterate_over_two_bam() {
+        let (_file1, path1) = create_bam_file();
+        let (_file2, path2) = create_bam_file();
+
+        let mut reader = Bam::new(vec![path2, path1], 10).unwrap();
+        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
+        assert_eq!(
+            &reader.next().unwrap().unwrap().sequence()[..],
+            [18, 132, 18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence()[..],
+            [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
+        );
+        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
+        assert_eq!(
+            &reader.next().unwrap().unwrap().sequence()[..],
+            [18, 132, 18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence()[..],
+            [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
+        );
+        assert!(reader.next().is_none());
+    }
+
+    #[test]
+    fn iterate_over_two_bam_notfile() {
+        let (_file1, path1) = create_bam_file();
+        let (_file2, path2) = create_bam_file();
+        let (file3, path3) = create_bam_file();
+
+        file3.close().unwrap();
+
+        let mut reader = Bam::new(vec![path3, path2, path1], 10).unwrap();
+        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
+        assert_eq!(
+            &reader.next().unwrap().unwrap().sequence()[..],
+            [18, 132, 18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence()[..],
+            [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
+        );
+        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
+        assert_eq!(
+            &reader.next().unwrap().unwrap().sequence()[..],
+            [18, 132, 18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence()[..],
+            [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
+        );
+
+        let failled_record = reader.next();
+        assert!(failled_record.is_some());
+        assert!(failled_record.unwrap().is_err());
+    }
+
+    #[test]
     fn run_worker() {
         let r1 = noodles::bam::Record::try_from_sam_record(
             noodles::sam::Header::builder()
@@ -215,12 +301,12 @@ mod t {
             &noodles::sam::Record::builder()
                 .set_read_name("1".parse().unwrap())
                 .set_flags(noodles::sam::record::Flags::UNMAPPED)
-                .set_sequence("ACTG".parse().unwrap())
+                .set_sequence("ACTGN".parse().unwrap())
                 .build()
                 .unwrap(),
         )
         .unwrap();
-        assert_eq!(worker(Ok(r1)), (2, 2, 0, 1));
+        assert_eq!(worker(Ok(r1)), (2, 2, 1, 1));
 
         assert_eq!(worker(Err(anyhow::anyhow!("prout"))), (0, 0, 0, 0));
     }
