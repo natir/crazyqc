@@ -1,9 +1,9 @@
 ![Test](https://github.com/natir/crazyqc/workflows/Test/badge.svg)
 ![Lints](https://github.com/natir/crazyqc/workflows/Lints/badge.svg)
 ![MSRV](https://github.com/natir/crazyqc/workflows/MSRV/badge.svg)
-[![CodeCov](https://codecov.io/gh/natir/crazyqc/branch/master/graph/badge.svg)](https://codecov.io/gh/natir/crazyqc)
+[![CodeCov](https://codecov.io/gh/natir/crazyqc/branch/main/graph/badge.svg)](https://codecov.io/gh/natir/crazyqc)
 [![Documentation](https://github.com/natir/crazyqc/workflows/Documentation/badge.svg)](https://natir.github.io/crazyqc/crazyqc)
-[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/natir/rustyread/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/natir/crazyqc/blob/main/LICENSE)
 
 # CrazyQC 🧬 💻
 
