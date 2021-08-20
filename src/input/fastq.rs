@@ -8,7 +8,7 @@ use anyhow::Context;
 /* project use */
 use crate::error;
 
-/// Open a fasta
+/// Open a fastq
 fn open(
     path: &str,
     buffer_size: usize,
@@ -113,7 +113,7 @@ mod t {
     use tempfile::NamedTempFile;
 
     use super::*;
-    use std::io::Write;
+    use std::io::{Seek, Write};
 
     fn create_fastq_file() -> (NamedTempFile, String) {
         let tmp_file = tempfile::NamedTempFile::new().unwrap();
@@ -122,7 +122,7 @@ mod t {
             let mut writer = tmp_file.reopen().unwrap();
             writeln!(writer, "@1\nACTG\n+\n!!!!").unwrap();
             writeln!(writer, "@2\nACTGACTG\n+\n!!!!!!!!").unwrap();
-            write!(
+            writeln!(
                 writer,
                 "@3\nAACACGTGAGTCCGCACACCGGACG\n+\n`kL7sm$xKvE8.RT`[kgO!34O'"
             )
@@ -157,7 +157,7 @@ mod t {
     }
 
     #[test]
-    fn iterate_over_fasta() {
+    fn iterate_over_fastq() {
         let (_e, path) = create_fastq_file();
 
         let mut reader = Fastq::new(vec![path], 10).unwrap();
@@ -167,6 +167,27 @@ mod t {
             reader.next().unwrap().unwrap(),
             b"AACACGTGAGTCCGCACACCGGACG".to_vec()
         );
+    }
+
+    #[test]
+    fn iterate_over_fastq_error() {
+        let (mut file, path) = create_fastq_file();
+
+        file.seek(std::io::SeekFrom::End(0)).unwrap();
+        writeln!(file, "Failled record").unwrap();
+
+        let mut reader = Fastq::new(vec![path], 10).unwrap();
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTG".to_vec());
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTGACTG".to_vec());
+        assert_eq!(
+            reader.next().unwrap().unwrap(),
+            b"AACACGTGAGTCCGCACACCGGACG".to_vec()
+        );
+
+        let record = reader.next();
+
+        assert!(record.is_some());
+        assert!(record.unwrap().is_err());
     }
 
     #[test]
