@@ -219,7 +219,7 @@ mod t {
 
     #[test]
     fn run_worker() {
-        assert_eq!(worker(Ok(b"ACTG".to_vec())), (2, 2, 0, 1));
+        assert_eq!(worker(Ok(b"ACTGN".to_vec())), (2, 2, 1, 1));
 
         assert_eq!(worker(Err(anyhow::anyhow!("prout"))), (0, 0, 0, 0));
     }
