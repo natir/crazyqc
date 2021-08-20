@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["crazyqc"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/clap/3.0.0-beta.2/clap/derive/trait.IntoApp.html\" title=\"trait clap::derive::IntoApp\">IntoApp</a> for <a class=\"struct\" href=\"crazyqc/cli/struct.Command.html\" title=\"struct crazyqc::cli::Command\">Command</a>","synthetic":false,"types":["crazyqc::cli::Command"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

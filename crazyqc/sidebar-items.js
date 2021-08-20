@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["cli","All stuff relate to command line"],["error","Define error type"],["input","Code to parse input"]]});

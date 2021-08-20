@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["i82level","Convert verbosity level (number of v) is log::Level"],["set_nb_threads","Set number of global rayon thread pool"]],"struct":[["Command","Struct use to parse command line argument"]]});
