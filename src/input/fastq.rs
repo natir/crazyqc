@@ -110,10 +110,11 @@ pub fn worker(wrapper: anyhow::Result<Vec<u8>>) -> (u64, u64, u64, u64) {
 
 #[cfg(test)]
 mod t {
-    use tempfile::NamedTempFile;
-
     use super::*;
+
     use std::io::{Seek, Write};
+
+    use tempfile::NamedTempFile;
 
     fn create_fastq_file() -> (NamedTempFile, String) {
         let tmp_file = tempfile::NamedTempFile::new().unwrap();
@@ -192,6 +193,27 @@ mod t {
 
     #[test]
     fn iterate_over_two_fastq() {
+        let (_file1, path1) = create_fastq_file();
+        let (_file2, path2) = create_fastq_file();
+
+        let mut reader = Fastq::new(vec![path2, path1], 10).unwrap();
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTG".to_vec());
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTGACTG".to_vec());
+        assert_eq!(
+            reader.next().unwrap().unwrap(),
+            b"AACACGTGAGTCCGCACACCGGACG".to_vec()
+        );
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTG".to_vec());
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTGACTG".to_vec());
+        assert_eq!(
+            reader.next().unwrap().unwrap(),
+            b"AACACGTGAGTCCGCACACCGGACG".to_vec()
+        );
+        assert!(reader.next().is_none());
+    }
+
+    #[test]
+    fn iterate_over_two_fastq_notfile() {
         let (_file1, path1) = create_fastq_file();
         let (_file2, path2) = create_fastq_file();
         let (file3, path3) = create_fastq_file();
