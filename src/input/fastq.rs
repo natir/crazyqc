@@ -191,6 +191,33 @@ mod t {
     }
 
     #[test]
+    fn iterate_over_two_fastq() {
+        let (_file1, path1) = create_fastq_file();
+        let (_file2, path2) = create_fastq_file();
+        let (file3, path3) = create_fastq_file();
+
+        file3.close().unwrap();
+
+        let mut reader = Fastq::new(vec![path3, path2, path1], 10).unwrap();
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTG".to_vec());
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTGACTG".to_vec());
+        assert_eq!(
+            reader.next().unwrap().unwrap(),
+            b"AACACGTGAGTCCGCACACCGGACG".to_vec()
+        );
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTG".to_vec());
+        assert_eq!(reader.next().unwrap().unwrap(), b"ACTGACTG".to_vec());
+        assert_eq!(
+            reader.next().unwrap().unwrap(),
+            b"AACACGTGAGTCCGCACACCGGACG".to_vec()
+        );
+
+        let failled_record = reader.next();
+        assert!(failled_record.is_some());
+        assert!(failled_record.unwrap().is_err());
+    }
+
+    #[test]
     fn run_worker() {
         assert_eq!(worker(Ok(b"ACTG".to_vec())), (2, 2, 0, 1));
 
