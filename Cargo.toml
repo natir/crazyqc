@@ -2,7 +2,7 @@
 name = "crazyqc"
 version = "0.1.0"
 authors = ["Pierre Marijon <pierre.marijon-ext@aphp.fr>"]
-edition = "2018"
+edition = "2021"
 
 description = "A crazily fast tools to compute small set of sequence quality control"
 

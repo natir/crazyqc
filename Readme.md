@@ -82,5 +82,4 @@ cargo install --path .
 
 ## Minimum supported Rust version
 
-Currently the minimum supported Rust version is 1.49.0.
-
+Currently the minimum supported Rust version is 1.57.0.
