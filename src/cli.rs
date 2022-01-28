@@ -1,53 +1,36 @@
 //! All stuff relate to command line
 
 /// Struct use to parse command line argument
-#[derive(clap::Clap, Debug)]
+#[derive(clap::Parser, Debug)]
 #[clap(
     name = "crazyqc",
     version = "0.1 ",
     author = "Pierre Marijon <pierre.marijon-ext@aphp.fr>",
-    about = "A crazily fast tools to compute small set of sequence quality control"
+    override_help = "A crazily fast tools to compute small set of sequence quality control"
 )]
 pub struct Command {
-    /// Paths of the fastq files
-    #[clap(short = 'q', long = "fastq", about = "Fastq input")]
+    /// Fastq input
+    #[clap(short = 'q', long = "fastq")]
     pub fastq: Vec<String>,
 
-    /// Paths of the bam files
-    #[clap(short = 'b', long = "bam", about = "Bam input, optional")]
+    /// Bam input
+    #[clap(short = 'b', long = "bam")]
     pub bam: Option<Vec<String>>,
 
-    /// Paths where result will be written
-    #[clap(
-        short = 'o',
-        long = "output",
-        about = "Path where result will be write, default: stdout"
-    )]
+    /// Path where result will be write, default: stdout
+    #[clap(short = 'o', long = "output")]
     pub output: Option<String>,
 
-    /// Control read buffer size
-    #[clap(
-        short = 'B',
-        long = "buffer-size",
-        about = "Size of reading buffer in bytes, default: 8192"
-    )]
+    /// Size of reading buffer in bytes, default: 8192
+    #[clap(short = 'B', long = "buffer-size")]
     pub buffer_size: Option<usize>,
 
-    /// Number of thread crazyqc can use
-    #[clap(
-        short = 't',
-        long = "threads",
-        about = "Number of thread use by crazyqc, 0 use all avaible core, default: 0"
-    )]
+    /// Number of thread use by crazyqc, 0 use all avaible core, default: 0
+    #[clap(short = 't', long = "threads")]
     pub threads: Option<usize>,
 
-    /// Verbosity level
-    #[clap(
-        short = 'v',
-        long = "verbosity",
-        parse(from_occurrences),
-        about = "verbosity level also control by environment variable CRAZYQC_LOG if flag is set CRAZYQC_LOG value is ignored"
-    )]
+    /// Verbosity level also control by environment variable CRAZYQC_LOG if flag is set CRAZYQC_LOG value is ignored
+    #[clap(short = 'v', long = "verbosity", parse(from_occurrences))]
     pub verbosity: i8,
 }
 

@@ -26,25 +26,25 @@ name = "crazyqc"
 
 [dependencies]
 # cli management
-clap       = "3.0.0-beta.2"
+clap       = { version = "3", features = ["derive"] }
 
 # paralelle stuff
 rayon      = "1"
 
 # input output management
 niffler    = "2"
-noodles    = { version = "0.1", features = ["bam", "fastq"] }
+noodles    = { version = "0.18", features = ["bam", "bgzf", "fastq"] }
 
 # Logging and error management
 log        = "0.4"
 anyhow     = "1"
 thiserror  = "1"
-env_logger = "0.8"
+env_logger = "0.9"
 
 
 [dev-dependencies]
 tempfile   = "3"
-noodles    = { version = "0.1", features = ["bam", "fastq", "sam"] }
+noodles    = { version = "0.18", features = ["bam", "bgzf", "fastq", "sam"] }
 
 
 [profile.release]

@@ -12,7 +12,8 @@ use crate::error;
 fn open(
     path: &str,
     buffer_size: usize,
-) -> anyhow::Result<noodles::bam::Reader<std::io::BufReader<std::fs::File>>> {
+) -> anyhow::Result<noodles::bam::Reader<noodles::bgzf::Reader<std::io::BufReader<std::fs::File>>>>
+{
     log::debug!("Open file {}", path);
 
     let mut reader = noodles::bam::Reader::new(std::io::BufReader::with_capacity(
@@ -30,7 +31,7 @@ pub struct Bam {
     buffer_size: usize,
     paths: Vec<String>,
     local_record: noodles::bam::Record,
-    current_input: noodles::bam::Reader<std::io::BufReader<std::fs::File>>,
+    current_input: noodles::bam::Reader<noodles::bgzf::Reader<std::io::BufReader<std::fs::File>>>,
 }
 
 impl Bam {
@@ -197,13 +198,16 @@ mod t {
 
         let mut reader = Bam::new(vec![path], 10).unwrap();
 
-        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
         assert_eq!(
-            &reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
+            [18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [18, 132, 18, 132]
         );
         assert_eq!(
-            reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
         );
     }
@@ -217,13 +221,16 @@ mod t {
 
         let mut reader = Bam::new(vec![path], 10).unwrap();
 
-        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
         assert_eq!(
-            &reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
+            [18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [18, 132, 18, 132]
         );
         assert_eq!(
-            reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
         );
 
@@ -238,22 +245,28 @@ mod t {
         let (_file2, path2) = create_bam_file();
 
         let mut reader = Bam::new(vec![path2, path1], 10).unwrap();
-        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
         assert_eq!(
-            &reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
+            [18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [18, 132, 18, 132]
         );
         assert_eq!(
-            reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
         );
-        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
         assert_eq!(
-            &reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
+            [18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [18, 132, 18, 132]
         );
         assert_eq!(
-            reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
         );
         assert!(reader.next().is_none());
@@ -268,22 +281,28 @@ mod t {
         file3.close().unwrap();
 
         let mut reader = Bam::new(vec![path3, path2, path1], 10).unwrap();
-        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
         assert_eq!(
-            &reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
+            [18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [18, 132, 18, 132]
         );
         assert_eq!(
-            reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
         );
-        assert_eq!(&reader.next().unwrap().unwrap().sequence()[..], [18, 132]);
         assert_eq!(
-            &reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
+            [18, 132]
+        );
+        assert_eq!(
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [18, 132, 18, 132]
         );
         assert_eq!(
-            reader.next().unwrap().unwrap().sequence()[..],
+            reader.next().unwrap().unwrap().sequence().as_ref()[..],
             [17, 33, 36, 132, 20, 130, 36, 33, 33, 34, 68, 18, 64]
         );
 
